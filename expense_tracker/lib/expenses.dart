@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:expense_tracker/expense.dart';
 import 'package:expense_tracker/expenses_list.dart';
 import 'package:expense_tracker/new_expense.dart';
+import 'package:expense_tracker/chart.dart';
 
 class Expenses extends StatefulWidget {
   const Expenses({super.key});
@@ -28,6 +29,7 @@ class _ExpensesState extends State<Expenses> {
 
   void _openAddExpenseOverplay() {
     showModalBottomSheet(
+      useSafeArea: true,
       isScrollControlled: true,
       context: context,
       builder: (ctx) => NewExpense(onAddExpense: _addExpense),
@@ -63,6 +65,7 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(context) {
+    final width = MediaQuery.of(context).size.width;
     Widget mainContent = const Center(
       child: Text("Hiç Harcama Yok Hadi Ekle"),
     );
@@ -73,21 +76,32 @@ class _ExpensesState extends State<Expenses> {
       );
     }
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Flutter Harcama Kontrol"),
-        actions: [
-          IconButton(
-            onPressed: _openAddExpenseOverplay,
-            icon: const Icon(Icons.add),
-          )
-        ],
-      ),
-      body: Column(
-        children: [
-          const Text("Grafik"),
-          Expanded(child: mainContent),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text("Flutter Harcama Kontrol"),
+          actions: [
+            IconButton(
+              onPressed: _openAddExpenseOverplay,
+              icon: const Icon(Icons.add),
+            )
+          ],
+        ),
+        body: width < 600
+            ? Column(
+                children: [
+                  //const Text("Grafik"),
+                  Chart(expenses: _registeredExpenses),
+                  Expanded(child: mainContent),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(
+                    child: Chart(expenses: _registeredExpenses),
+                  ),
+                  Expanded(
+                    child: mainContent,
+                  )
+                ],
+              ));
   }
 }
